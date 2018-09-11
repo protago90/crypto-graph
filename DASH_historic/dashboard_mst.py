@@ -33,7 +33,7 @@ historic_df.drop(['tether'], axis=1, inplace=True)   # optional
 
 # animation params: day-units-> rolling-corr & single-seq step-interval
 rolling_corr = 45   # max 92
-interval = 10
+interval = 30
 windows = list(range(year))[::interval]
 historic_df = historic_df.tail(year + rolling_corr)
 
@@ -43,43 +43,60 @@ network_graph_figures = network_graph(historic_df, windows, rolling_corr)
 tseries_graph_figures = tseries_graph(bitcoins_df, windows, year)
 
 
-
 # DASH APPs-class & server initiation +dashboard web-layout composition
 app = dash.Dash()
 server = app.server
 
+# app.config['suppress_callback_exceptions']=True
+
 app.css.append_css(
-	{"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
+	{"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"}
+)
+
+'button_play'
+
 
 app.layout = html.Div([
 	html.Div([
 		dcc.Graph(
             id='network_graph'
         ), 
-	], className="row"),
+	], className='row'),
 
 	html.Div([
 		dcc.Graph(
             id='tseries_graph'
         ), 
-	], className="row"),	
+	], className='row'),	
 
 	html.Div([
 		dcc.Slider(
 			id='slide_roller',
 			min=0,
 			max=len(windows)-1,
-			#step=None,
 			value=0,
 			updatemode='drag',
-			marks=windows #[str(i) if (i%interval == 0) else '' for i in windows]
-        )
-	], className="row"),
-# {i: '{}'.format(i) if (i % 10 == 0) else '' for i in range(len(historic_df))}
+			marks=windows
+        ),
+	], className='row'),
+
+	html.Hr(),
+
 	html.Div([
-		dcc.Input(id='input_state', value=0)
-	], className="row")
-], className="container", style=dict(width='150%'))
+		dcc.Input(id='input_state', value=0),
+		dcc.Input(id='animation_reset', value=''),
+		html.Button('reset', id='button_reset'),
+		html.Button('o/>', id='button_play_stop'),
+		html.H6('pause!', id='animation_info')
+	], className='row'),
+
+	dcc.Interval(
+		id='phase_sequencer',
+		interval=1*99999,
+		n_intervals=0
+	)
+
+], className='container', style=dict(width='150%'))
 
 
 @app.callback(
@@ -95,11 +112,61 @@ def update_tseries_graph(slider_value):
 	return tseries_graph_figures[slider_value]
 
 
+
 @app.callback(
 	Output('input_state', 'value'),
 	[Input('slide_roller', 'value')] )
 def update_network_graph(value):
 	return value*interval
+
+
+
+@app.callback(
+	Output('slide_roller', 'value'),
+	[Input('phase_sequencer', 'n_intervals')] )
+def update_slide_roller(n_intervals):
+	return min(n_intervals, windows[-1])
+
+@app.callback(
+	Output('phase_sequencer', 'n_intervals'),
+	[Input('button_reset', 'n_clicks')] )
+def phase_seq_reset(n_clickseq):
+	if n_clickseq > 0:
+		return 0
+
+@app.callback(
+	Output('animation_reset', 'value'),
+	[Input('button_reset', 'n_clicks')] )
+def update_input(n_clicks):
+	return n_clicks
+
+
+
+@app.callback(
+	Output('phase_sequencer', 'interval'),
+	[Input('button_play_stop', 'n_clicks')] )
+def update_phase_seq(n_clicks):
+	try:
+		if n_clicks % 2 != 0:
+			return 1*1500
+		else:
+			return 1*999999
+	except ValueError:
+		return 1*999999
+
+
+@app.callback(
+	Output('animation_info', 'children'),
+	[Input('button_play_stop', 'n_clicks')] )
+def animation_info(n_clicks):
+	try:
+		if n_clicks % 2 != 0:
+			return 'playing..'
+		else:
+			return 'pause'
+	except ValueError:
+		return 'pause'
+
 
 
 if __name__ == '__main__':
