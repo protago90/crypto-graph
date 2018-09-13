@@ -1,10 +1,9 @@
 
 import plotly.graph_objs as go
 import networkx as nx
-from datetime import datetime
 
 
-def network_graph(historic_df, windows, rolling_corr):
+def network_graph_pre(historic_df, windows, rolling_corr):
 	''' !!!!!!! '''
 
     # if windows is int than range(windows, windows) ale as usual
@@ -151,7 +150,7 @@ def network_graph(historic_df, windows, rolling_corr):
 	return network_plotly_figures
 
 
-def tseries_graph(bitcoins_df, windows, year):
+def tseries_graph_pre(bitcoins_df, windows, year):
 	''' o jednym oknie symulacju..'''
 
 	tseries_plotly_figures = []
