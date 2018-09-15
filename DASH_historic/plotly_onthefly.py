@@ -4,7 +4,7 @@ import networkx as nx
 
 
 def network_graph_fly(historic_df, window, rolling_corr):
-	'''function for on-the-fly poin in time network-figure generation'''
+	'''function for on-the-fly point-in-time graphx-figure generation'''
 
 	correlates_df = historic_df.iloc[ window:(rolling_corr + window) ]
 
@@ -131,8 +131,8 @@ def network_graph_fly(historic_df, window, rolling_corr):
 			showarrow = False,
 			xref = "paper", 
 			yref="paper",
-			x = 0.48, 
-			y=0) ],
+			x = 0.47, 
+			y=0.001) ],
 		xaxis = dict(
 			showgrid=False, 
 			zeroline=False,
@@ -150,7 +150,7 @@ def network_graph_fly(historic_df, window, rolling_corr):
 
 
 def tseries_graph_fly(bitcoins_df, window, year):
-	'''function for on-the-fly poin in time tseries-figure generation'''
+	'''function for on-the-fly point-in-time series-figure generation'''
 
 	# package plotly: t.series traces-contruction
 	series_trace = go.Scatter(
@@ -180,7 +180,7 @@ def tseries_graph_fly(bitcoins_df, window, year):
 		titlefont = dict(size=8),
 		showlegend = False,
 		annotations = [dict(
-			x=39, 
+			x=41, 
 			y=6000,
             xref='x',
             yref='y',

@@ -33,7 +33,7 @@ historic_df.drop(['tether'], axis=1, inplace=True)   # optional
 
 
 # animation params: day-units-> rolling-corr & single-seq step-interval
-rolling_corr = 60   # max 92
+rolling_corr = 45   # max 92
 interval = 5
 windows = list(range(year))[::interval]
 historic_df = historic_df.tail(year + rolling_corr)
@@ -72,7 +72,7 @@ app.layout = html.Div([
 		html.Div(dcc.Markdown('''*❖ Postgraduate thesis-project in* [
 							  🔗](http://datascience.wne.uw.edu.pl/)*-DataScience  .*'''
 				),
-				style={'float': 'right', 'text-align': 'right', 'margin-top': '22'}
+				style={'float': 'right', 'text-align': 'right', 'margin-top': '23'}
 		)
 	],
 	className='row' ),
@@ -140,7 +140,7 @@ app.layout = html.Div([
 
 	html.Div([
 		html.Img(src="assets/logo_WNE.jpg",
-				 style={'width': '26%', 'float': 'left'}
+				 style={'width': '25%', 'float': 'left'}
 		),
 		html.A(html.Img(src="assets/linkedin.png",
 				 		style={'width': '4%', 'float': 'right'}

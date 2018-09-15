@@ -4,9 +4,7 @@ import networkx as nx
 
 
 def network_graph_pre(historic_df, windows, rolling_corr):
-	''' !!!!!!! '''
-
-    # if windows is int than range(windows, windows) ale as usual
+	'''function for in-advance full-horizon graphx-figures generation'''
 
 	network_plotly_figures = []
 
@@ -117,6 +115,7 @@ def network_graph_pre(historic_df, windows, rolling_corr):
 						  round(betweenness[nghbr[0]],6) ) 
 			])
 
+		# package plotly: network constant lyout-aesthetics
 		mst_layout = go.Layout(
 			title = "<br><b>MST graph representation"
 					"of Cryptocurrency Market</b>",
@@ -151,12 +150,13 @@ def network_graph_pre(historic_df, windows, rolling_corr):
 
 
 def tseries_graph_pre(bitcoins_df, windows, year):
-	''' o jednym oknie symulacju..'''
+	'''function for in-advance full-horizon series-figures generation'''
 
 	tseries_plotly_figures = []
 
 	for window in windows:
 
+		# package plotly: t.series traces-contruction
 		series_trace = go.Scatter(
 			y = bitcoins_df.values[:(window + 1)], # pandas series!
 			x = list(range(year))[:(window + 1)],
@@ -168,15 +168,13 @@ def tseries_graph_pre(bitcoins_df, windows, year):
 			mode = 'lines+markers'
 		)
 
+		# package plotly: t.series fixed trace-contruction
 		fixed_trace = go.Scatter(
 			y = bitcoins_df.values, # pandas series!
 			x = list(range(year)),  
 			line = dict(width=1, color='black'), 
 			opacity = 0.2,
-			#hoverinfo = 'none',
 			name = 'BTC',
-			#text = list(bitcoins_df.index),
-			#hoverinfo = 'text',
 			mode = 'lines+markers'
 		)
 
