@@ -4,7 +4,7 @@ import networkx as nx
 
 
 def network_graph_fly(historic_df, window, rolling_corr):
-	'''fun '''
+	'''function for on-the-fly poin in time network-figure generation'''
 
 	correlates_df = historic_df.iloc[ window:(rolling_corr + window) ]
 
@@ -29,7 +29,7 @@ def network_graph_fly(historic_df, window, rolling_corr):
 		weight='weight', 
 		pos=fix_posit, 
 		fixed=fix_nodes,
-		scale=3, 
+		scale=1, 
 		center=(0,0)
 	)
 
@@ -62,25 +62,31 @@ def network_graph_fly(historic_df, window, rolling_corr):
 		x = [],
 		y = [],
 		text = [],
+		textposition = 'top right',
 		hoverinfo = 'text',
 		name = window,
 		mode = 'markers', 
 		marker = dict(
 			showscale = True,
-			colorscale='YlGnBu', 
+			colorscale = [[0.0, 'rgb(189,189,189)'],
+						  [.12, 'rgb(150,150,150)'], 
+						  [.30, 'rgb(115,115,115)'],
+						  [.64, 'rgb(82,82,82)'], 
+						  [1.0, 'rgb(37,37,37)']], 
 			reversescale = False,
-			opacity = 0.9,
+			opacity = 0.88,
 			cmin = 0.0,
 			cmax = 0.6,
 			size = [],
 			color = [],
 			colorbar = dict(
-				thickness = 12,
-				title = "Graph Centrality Metrics: "
-						"Degree [size] & Betweenes [color]",
+				thickness = 5.75,
+				title = "centrality metrics: "
+						"degree =size & betweenes =color",
 				xanchor = 'left',
-				titleside = 'right'),
-			line = dict(width = [], color='black') ) 
+				titleside = 'right',
+				borderwidth = 0),
+			line = dict(width = [], color='rgb(144, 213, 229)') ) 
 	)
 
 	# plot parametrization -nodes coordinates
@@ -96,13 +102,13 @@ def network_graph_fly(historic_df, window, rolling_corr):
 			[ betweenness[nghbr[0]] ] 
 		)
 		node_trace['marker']['size'] += tuple(
-			[len(nghbr[1]) * 5 + 20] 
+			[len(nghbr[1]) * 6 + 15] 
 		) 
 		node_trace['marker']['line']['width'] += tuple(
-			[2 if nghbr[0] == 'bitcoin' else .2]
+			[3 if nghbr[0] == 'bitcoin' else 0.4]
 		)
 		node_trace['text'] += tuple([
-			"COIN: <b>> {} <</b>"
+			"COIN: <b>- {} -</b>"
 			"<br><i>distance to Bitcoin: {}</i>"
 			"<br><i>neighbours: {}</i>"
 			"<br><i>betweenness: {}</i>"
@@ -112,30 +118,31 @@ def network_graph_fly(historic_df, window, rolling_corr):
 					  round(betweenness[nghbr[0]],6) ) 
 		])
 
+	# package plotly: network constant lyout-aesthetics
 	mst_layout = go.Layout(
-		title = "<br><b>MST graph representation"
-				"of Cryptocurrency Market</b>",
-		titlefont = dict(size=15),
+		# title = "<b>MST-graph Crypto-representation</b>",
+		# titlefont = dict(size=8),
 		showlegend = False,
 		hovermode = 'closest',
-		margin = dict(b=5, l=5, r=5, t=15),
-		# annotations = [dict(
-		# 	# text = "LINK: <a href='https://plot.ly'>PLOTLY</a>",
-		# 	showarrow = False,
-		# 	xref = "paper", 
-		# 	yref="paper",
-		# 	x = 0.005, 
-		# 	y=-0.002) ],
+		height=325,
+		margin = dict(b=0, l=0, r=0, t=20),
+		annotations = [dict(
+			text = "workbook: <a href='https://github.com/Protago90/grad.thesis_DS-cryptoBit/blob/master/mstgraph_workbook.ipynb''>MST-graph</a>",
+			showarrow = False,
+			xref = "paper", 
+			yref="paper",
+			x = 0.48, 
+			y=0) ],
 		xaxis = dict(
 			showgrid=False, 
 			zeroline=False,
 			showticklabels=False, 
-			range=[-3,4] ),  
+			range=[-3,3.3] ),  
 		yaxis = dict(
 			showgrid=False, 
 			zeroline=False, 
 			showticklabels=False,
-			range=[-5,5] )
+			range=[-3,3.3] )
 	)
 
 	return go.Figure(data=[edge_trace, node_trace], layout=mst_layout)
@@ -143,29 +150,51 @@ def network_graph_fly(historic_df, window, rolling_corr):
 
 
 def tseries_graph_fly(bitcoins_df, window, year):
-	''' o jednym oknie symulacju..'''
+	'''function for on-the-fly poin in time tseries-figure generation'''
 
+	# package plotly: t.series traces-contruction
 	series_trace = go.Scatter(
 		y = bitcoins_df.values[:(window + 1)], # pandas series!
 		x = list(range(year))[:(window + 1)],
-		line = dict(width=1.5, color='#888'), 
-		opacity = 0.6,
+		line = dict(width=2.5, shape='spline', color='rgb(144, 213, 229)'),
+		opacity = 0.9,
 		hoverinfo = 'text',
 		text = '{:%d, %b %Y}'.format( bitcoins_df.index[window] ),
 		fill = 'tozeroy',
-		mode = 'lines+markers'
+		mode = 'lines'
 	)
 
+	# package plotly: t.series fixed trace-contruction
 	fixed_trace = go.Scatter(
 		y = bitcoins_df.values, # pandas series!
-		x = list(range(year)),  
-		line = dict(width=1, color='black'), 
-		opacity = 0.2,
-		#hoverinfo = 'none',
+		x = list(range(year)),   
+		opacity = 0.75,
 		name = 'BTC',
-		#text = list(bitcoins_df.index),
-		#hoverinfo = 'text',
-		mode = 'lines+markers'
+		line = dict(width=3.25, shape='spline', color='rgb(37, 37, 37)'),
+		mode = 'lines'
 	)
 
-	return go.Figure(data=[fixed_trace, series_trace])
+	# package plotly: t.series constant lyout-aesthetics
+	series_layout = go.Layout(
+		title = "<b>Crypto Timse-series",
+		titlefont = dict(size=8),
+		showlegend = False,
+		annotations = [dict(
+			x=39, 
+			y=6000,
+            xref='x',
+            yref='y',
+            text='Day: -{0:0=3d}-'.format(window),
+            showarrow=True,
+            arrowhead=0,
+            ax=0,
+            ay=0,
+            font=dict(size=24) )],
+		autosize = False,
+		height = 210,
+		margin = dict(b=0, l=0, r=0, t=0, pad=2),
+		xaxis = dict(showgrid=False, zeroline=False),  
+		yaxis = dict(showgrid=False, zeroline=False)
+	)
+
+	return go.Figure(data=[fixed_trace, series_trace], layout=series_layout)
