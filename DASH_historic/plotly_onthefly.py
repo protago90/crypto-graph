@@ -6,7 +6,7 @@ import networkx as nx
 def network_graph_fly(historic_df, window, rolling_corr):
 	'''function for on-the-fly point-in-time graphx-figure generation'''
 
-	correlates_df = historic_df.iloc[ window:(rolling_corr + window) ]
+	correlates_df = historic_df.iloc[window : rolling_corr+window]
 
 	# sequence corr-matrix estimation (mst-graph eucliden-distance)
 	corr_matrix = correlates_df.corr()
@@ -23,9 +23,10 @@ def network_graph_fly(historic_df, window, rolling_corr):
 	graph_MST = nx.minimum_spanning_tree(graph_TS)
 
 	# graph-nodes coordinates +callibration bitcoin-coin centrality
-	fix_posit = {'bitcoin': (0,0)}
+	fix_posit = dict(bitcoin=(0,0))
 	fix_nodes = fix_posit.keys()
-	positions = nx.spring_layout(graph_MST, 
+	positions = nx.spring_layout(
+		graph_MST, 
 		weight='weight', 
 		pos=fix_posit, 
 		fixed=fix_nodes,
@@ -99,13 +100,13 @@ def network_graph_fly(historic_df, window, rolling_corr):
 	for n, nghbr in enumerate( graph_MST.adjacency() ):
 		# print("n: {}  + {}".format(n, nghbr[1]))
 		node_trace['marker']['color'] += tuple( 
-			[ betweenness[nghbr[0]] ] 
+			[betweenness[nghbr[0]]] 
 		)
 		node_trace['marker']['size'] += tuple(
-			[len(nghbr[1]) * 6 + 15] 
+			[len(nghbr[1])*6.5 + 15] 
 		) 
 		node_trace['marker']['line']['width'] += tuple(
-			[3 if nghbr[0] == 'bitcoin' else 0.4]
+			[3.5 if nghbr[0] == 'bitcoin' else 0.4]
 		)
 		node_trace['text'] += tuple([
 			"COIN: <b>- {} -</b>"
@@ -124,25 +125,26 @@ def network_graph_fly(historic_df, window, rolling_corr):
 		# titlefont = dict(size=8),
 		showlegend = False,
 		hovermode = 'closest',
-		height=325,
+		height = 325,
 		margin = dict(b=0, l=0, r=0, t=20),
 		annotations = [dict(
-			text = "workbook: <a href='https://github.com/Protago90/grad.thesis_DS-cryptoBit/blob/master/mstgraph_workbook.ipynb''>MST-graph</a>",
-			showarrow = False,
-			xref = "paper", 
+			text="workbook: <a href='https://github.com/Protago90/grad.thesis_DS-cryptoBit/blob/master/mstgraph_workbook.ipynb''>MST-graph</a>",
+			font=dict(size=10),
+			showarrow=False,
+			xref="paper", 
 			yref="paper",
-			x = 0.47, 
+			x=0.48, 
 			y=0.001) ],
 		xaxis = dict(
 			showgrid=False, 
 			zeroline=False,
 			showticklabels=False, 
-			range=[-3,3.3] ),  
+			range=[-3.25,3.5] ),  
 		yaxis = dict(
 			showgrid=False, 
 			zeroline=False, 
 			showticklabels=False,
-			range=[-3,3.3] )
+			range=[-3.25,3.5] )
 	)
 
 	return go.Figure(data=[edge_trace, node_trace], layout=mst_layout)
@@ -154,12 +156,12 @@ def tseries_graph_fly(bitcoins_df, window, year):
 
 	# package plotly: t.series traces-contruction
 	series_trace = go.Scatter(
-		y = bitcoins_df.values[:(window + 1)], # pandas series!
-		x = list(range(year))[:(window + 1)],
+		y = bitcoins_df.values[: window+1], # pandas series!
+		x = list(range(year))[: window+1],
 		line = dict(width=2.5, shape='spline', color='rgb(144, 213, 229)'),
 		opacity = 0.9,
 		hoverinfo = 'text',
-		text = '{:%d, %b %Y}'.format( bitcoins_df.index[window] ),
+		text = '{:%d, %b %Y}'.format(bitcoins_df.index[window]),
 		fill = 'tozeroy',
 		mode = 'lines'
 	)
@@ -189,7 +191,7 @@ def tseries_graph_fly(bitcoins_df, window, year):
             arrowhead=0,
             ax=0,
             ay=0,
-            font=dict(size=24) )],
+            font=dict(size=22) )],
 		autosize = False,
 		height = 210,
 		margin = dict(b=0, l=0, r=0, t=0, pad=2),
